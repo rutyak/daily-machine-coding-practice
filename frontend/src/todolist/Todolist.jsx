@@ -1,55 +1,61 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addTodo, deleteTodo, updateTodo } from "../slice/todoSlice";
+import { addTodos, deleteTodo, updateTodo } from "../slice/todoSlice";
 
-export default function Todolist() {
-  const [text, setText] = useState("");
-  const [editId, setEditId] = useState(null);
-  const todos = useSelector((state) => state.todos);
+const Todolist = () => {
+  const tasks = useSelector((state) => state.todo);
+
+  console.log("tasks: ", tasks);
+
+  const [editId, setEditId] = useState();
+
   const dispatch = useDispatch();
 
-  const handleSubmit = () => {
-    if (!text) return;
+  const [input, setInput] = useState("");
 
-    if (editId) {
-      dispatch(updateTodo({ id: editId, text }));
-      setEditId(null);
-    } else {
-      dispatch(addTodo(text));
-    }
+  function handleEditClick(id, text) {
+    setEditId(id);
+    setInput(text);
+  }
 
-    setText("");
-  };
+  function handleUpdateTask() {
+    dispatch(updateTodo({ editId, input }));
+    setEditId();
+    setInput("");
+  }
+
+  function handleAddTask() {
+    dispatch(addTodos(input));
+  }
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Redux Todo List</h2>
-
+    <div style={{ width: "200px" }}>
       <input
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="Enter todo"
+        type="text"
+        value={input}
+        placeholder="Enter task"
+        onChange={(e) => setInput(e.target.value)}
+        style={{ widht: "100%" }}
       />
-      <button onClick={handleSubmit}>{editId ? "Update" : "Add"}</button>
+      <button onClick={editId ? handleUpdateTask : handleAddTask}>
+        {editId ? "Update" : "Add"}
+      </button>
 
-      <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>
-            {todo.text}
-            <button
-              onClick={() => {
-                setEditId(todo.id);
-                setText(todo.text);
-              }}
-            >
+      <div style={{ width: "100%"}}>
+        {tasks.map((task) => (
+          <div>
+            {task.text}
+            <button onClick={() => handleEditClick(task.id, task.text)}>
               Edit
             </button>
-            <button onClick={() => dispatch(deleteTodo(todo.id))}>
+            <button onClick={() => dispatch(deleteTodo(task.id))}>
               Delete
             </button>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
-}
+};
+
+export default Todolist;

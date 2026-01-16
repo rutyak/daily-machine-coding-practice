@@ -4,19 +4,24 @@ const todoSlice = createSlice({
   name: "todos",
   initialState: [],
   reducers: {
-    addTodo: (state, action) => {
+    addTodos: (state, action) => {
       state.push({ id: Date.now(), text: action.payload });
     },
     deleteTodo: (state, action) => {
-      return state.filter(todo => todo.id !== action.payload);
+      return state.filter((task) => task.id !== action.payload);
     },
     updateTodo: (state, action) => {
-      const { id, text } = action.payload;
-      const todo = state.find(t => t.id === id);
-      if (todo) todo.text = text;
+      console.log("update clicked: ", action.payload);
+
+      const { editId, input } = action.payload;
+      const task = state.find((task) => editId === task.id);
+      if (task) {
+        task.text = input;
+      }
     },
   },
 });
 
-export const { addTodo, deleteTodo, updateTodo } = todoSlice.actions;
+export const { addTodos, deleteTodo, updateTodo } = todoSlice.actions;
+
 export default todoSlice.reducer;
